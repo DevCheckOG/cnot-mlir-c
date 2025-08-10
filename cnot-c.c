@@ -78,12 +78,14 @@ void apply_cnot(TwoQubitState *state) {
 }
 
 void apply_hadamard_q1(TwoQubitState *state) {
+    
     double sqrt2 = 1.0 / sqrt(2);
     Complex h[2][2] = {{{sqrt2, 0}, {sqrt2, 0}}, {{sqrt2, 0}, {-sqrt2, 0}}};
     Complex h_tensor_i[4][4] = {{{0, 0}, {0, 0}, {0, 0}, {0, 0}},
                                {{0, 0}, {0, 0}, {0, 0}, {0, 0}},
                                {{0, 0}, {0, 0}, {0, 0}, {0, 0}},
                                {{0, 0}, {0, 0}, {0, 0}, {0, 0}}};
+    
     for (int i = 0; i < 2; i++) {
         for (int j = 0; j < 2; j++) {
             h_tensor_i[i][j] = h[i][j];
@@ -131,9 +133,7 @@ void apply_z_q1(TwoQubitState *state) {
 void measure_state(TwoQubitState state, int *q1, int *q2) {
     double probs[4];
     
-    for (int i = 0; i < 4; i++) {
-        probs[i] = complex_abs_squared(state.state[i]);
-    }
+    for (int i = 0; i < 4; i++) probs[i] = complex_abs_squared(state.state[i]);
     
     double r = (double)rand() / RAND_MAX;
     double sum = 0.0;
@@ -152,10 +152,12 @@ void measure_state(TwoQubitState state, int *q1, int *q2) {
 
 void print_state(TwoQubitState state) {
     const char* basis[4] = {"|00>", "|01>", "|10>", "|11>"};
+    
     for (int i = 0; i < 4; i++) {
         printf("%s: %.3f + %.3fi (prob: %.3f)\n", basis[i], 
                state.state[i].real, state.state[i].imag, complex_abs_squared(state.state[i]));
     }
+    
     printf("Normalized: %s\n", is_normalized(state) ? "Yes" : "No");
 }
 
