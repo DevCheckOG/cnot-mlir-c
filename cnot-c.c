@@ -35,6 +35,7 @@ typedef struct {
 TwoQubitState init_state(double c00_r, double c00_i, double c01_r, double c01_i,
                          double c10_r, double c10_i, double c11_r, double c11_i) {
     TwoQubitState state;
+    
     state.state[0] = (Complex){c00_r, c00_i};
     state.state[1] = (Complex){c01_r, c01_i};
     state.state[2] = (Complex){c10_r, c10_i};
@@ -57,16 +58,14 @@ void apply_matrix(TwoQubitState *state, Complex matrix[4][4]) {
     TwoQubitState new_state = {{0, 0}, {0, 0}, {0, 0}, {0, 0}};
     
     for (int i = 0; i < 4; i++) {
-        for (int j = 0; j < 4; j++) {
-            new_state.state[i] = complex_add(new_state.state[i], 
-                                            complex_mult(matrix[i][j], state->state[j]));
-        }
+        for (int j = 0; j < 4; j++) new_state.state[i] = complex_add(new_state.state[i], complex_mult(matrix[i][j], state->state[j]));
     }
     
     *state = new_state;
 }
 
 void apply_cnot(TwoQubitState *state) {
+    
     Complex cnot[4][4] = {
         {{1, 0}, {0, 0}, {0, 0}, {0, 0}},
         {{0, 0}, {1, 0}, {0, 0}, {0, 0}},
@@ -75,12 +74,15 @@ void apply_cnot(TwoQubitState *state) {
     };
     
     apply_matrix(state, cnot);
+
 }
 
 void apply_hadamard_q1(TwoQubitState *state) {
     
     double sqrt2 = 1.0 / sqrt(2);
+    
     Complex h[2][2] = {{{sqrt2, 0}, {sqrt2, 0}}, {{sqrt2, 0}, {-sqrt2, 0}}};
+    
     Complex h_tensor_i[4][4] = {{{0, 0}, {0, 0}, {0, 0}, {0, 0}},
                                {{0, 0}, {0, 0}, {0, 0}, {0, 0}},
                                {{0, 0}, {0, 0}, {0, 0}, {0, 0}},
@@ -140,6 +142,7 @@ void measure_state(TwoQubitState state, int *q1, int *q2) {
     
     for (int i = 0; i < 4; i++) {
         sum += probs[i];
+        
         if (r <= sum) {
             *q1 = (i & 2) >> 1;
             *q2 = i & 1;
@@ -153,15 +156,12 @@ void measure_state(TwoQubitState state, int *q1, int *q2) {
 void print_state(TwoQubitState state) {
     const char* basis[4] = {"|00>", "|01>", "|10>", "|11>"};
     
-    for (int i = 0; i < 4; i++) {
-        printf("%s: %.3f + %.3fi (prob: %.3f)\n", basis[i], 
-               state.state[i].real, state.state[i].imag, complex_abs_squared(state.state[i]));
-    }
-    
+    for (int i = 0; i < 4; i++) printf("%s: %.3f + %.3fi (prob: %.3f)\n", basis[i], state.state[i].real, state.state[i].imag, complex_abs_squared(state.state[i]));
+
     printf("Normalized: %s\n", is_normalized(state) ? "Yes" : "No");
 }
 
-int main() {
+const int main(void) {
     srand(time(NULL));
 
     printf("Example 1: Generate entangled state (|00> + |11>)/sqrt(2)\n");
